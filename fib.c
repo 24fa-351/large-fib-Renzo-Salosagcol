@@ -1,12 +1,15 @@
 #include <stdio.h>
 #include <stdlib.h>
+#include <stdint.h>
 
-unsigned long long int recursiveFibWrapper (
-   unsigned long long int target_fib_index, 
-   unsigned long long int fib_series[], int max_index) {
+typedef __uint128_t fib_int_t;
+
+fib_int_t recursiveFibWrapper (
+   fib_int_t target_fib_index, 
+   fib_int_t fib_series[], int max_index) {
 
    if (max_index == target_fib_index) {
-      return fib_series[max_index - 1];
+      return fib_series[max_index];
    } else {
       fib_series[max_index + 1] = 
       fib_series[max_index] + fib_series[max_index - 1];
@@ -19,9 +22,9 @@ unsigned long long int recursiveFibWrapper (
    return 0;
 }
 
-unsigned long long int iterativeFibWrapper (
-   unsigned long long int target_fib_index, 
-   unsigned long long int fib_series[], int max_index) {
+fib_int_t iterativeFibWrapper (
+   fib_int_t target_fib_index, 
+   fib_int_t fib_series[], int max_index) {
 
    while (max_index != target_fib_index) {
       fib_series[max_index + 1] = 
@@ -29,30 +32,30 @@ unsigned long long int iterativeFibWrapper (
       max_index++;
    }
 
-   return fib_series[max_index - 1];
+   return fib_series[max_index];
 }
 
-unsigned long long int fib_r(
-   unsigned long long int target_fib_index, 
-   unsigned long long int fib_series[]) {
+fib_int_t fib_r(
+   fib_int_t target_fib_index, 
+   fib_int_t fib_series[]) {
 
-      if (fib_series[target_fib_index - 1] != 0 ||
-         target_fib_index - 1 == 0 ||
-         target_fib_index - 1 == 1) {
-            return fib_series[target_fib_index - 1];
+      if (fib_series[target_fib_index] != 0 ||
+         target_fib_index == 0 ||
+         target_fib_index == 1) {
+            return fib_series[target_fib_index];
          }
       
       return recursiveFibWrapper(target_fib_index, fib_series, 1);
 }
 
-unsigned long long int fib_i(
-   unsigned long long int target_fib_index, 
-   unsigned long long int fib_series[]) {
+fib_int_t fib_i(
+   fib_int_t target_fib_index, 
+   fib_int_t fib_series[]) {
 
-      if (fib_series[target_fib_index - 1] != 0 ||
-         target_fib_index - 1 == 0 ||
-         target_fib_index - 1 == 1) {
-            return fib_series[target_fib_index - 1];
+      if (fib_series[target_fib_index] != 0 ||
+         target_fib_index == 0 ||
+         target_fib_index == 1) {
+            return fib_series[target_fib_index];
          }
       
       return iterativeFibWrapper(target_fib_index, fib_series, 1);
@@ -60,28 +63,21 @@ unsigned long long int fib_i(
 
 int main (int argc, char *argv[]) {
 
-   if (argc != 4) {
-      fprintf(stderr, "Usage: %s <number> <type> <filename>\n", argv[0]);
+   if (argc != 3) {
+      fprintf(stderr, "Usage: %s <number> <type>\n", argv[0]);
       return 1;
    }
 
-   const unsigned long long int INFORMATION_NUMBER = atoi(argv[1]);
+   const fib_int_t TARGET_FIB_INDEX = atoi(argv[1]);
    const char INFORMATION_TYPE = argv[2][0];
-   const char *FILE_NAME = argv[3];
 
-   FILE *file_pointer = fopen(FILE_NAME, "r");
-   char file_text[256];
-   fgets(file_text, sizeof(file_text), file_pointer);
-   const int FILE_NUMBER = atoi(file_text);
-
-   const unsigned long long int TARGET_FIB_INDEX = INFORMATION_NUMBER + FILE_NUMBER;
-
-   unsigned long long int fib_series[TARGET_FIB_INDEX + 1];
-   for (unsigned long long int index = 0; index < TARGET_FIB_INDEX + 1; index++) {
+   fib_int_t fib_series[TARGET_FIB_INDEX + 1];
+   for (fib_int_t index = 0; index < TARGET_FIB_INDEX + 1; index++) {
       fib_series[index] = 0;
    }
+   fib_series[0] = 0;
    fib_series[1] = 1;
-   unsigned long long int result = 0;
+   fib_int_t result = 0;
 
    if (INFORMATION_TYPE == 'r') {
       result = fib_r(TARGET_FIB_INDEX, fib_series);
@@ -90,8 +86,7 @@ int main (int argc, char *argv[]) {
       result = fib_i(TARGET_FIB_INDEX, fib_series);
    }
 
-   printf("%llu\n", result);
+   printf("%llu\n", (unsigned long long)result);
    
-   fclose(file_pointer);
    return 0;
 }
